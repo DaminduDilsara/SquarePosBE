@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	AppConfig  *AppConfigurations  `yaml:"app_config"`
-	DbConfig   *DbConfigurations   `yaml:"db_config"`
-	AuthConfig *AuthConfigurations `yaml:"auth_config"`
+	AppConfig    *AppConfigurations    `yaml:"app_config"`
+	AuthConfig   *AuthConfigurations   `yaml:"auth_config"`
+	SquareConfig *SquareConfigurations `yaml:"square_config"`
 }
 
 func LoadConfigurations() *Config {

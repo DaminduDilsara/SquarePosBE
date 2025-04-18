@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/Square-POC/SquarePosBE/internal/schemas/requestDtos"
 	"github.com/Square-POC/SquarePosBE/internal/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 
 type ControllerV1 struct {
 	servicesCollection *services.ServiceCollection
+	services           services.ServiceCollection
 }
 
 func NewControllerV1(servicesCollection *services.ServiceCollection) *ControllerV1 {
@@ -39,4 +41,27 @@ func (con *ControllerV1) GoogleCallback(c *gin.Context) {
 		"message": "Google Login Successful",
 		"user":    userInfo,
 	})
+}
+
+func (con ControllerV1) AccumulateLoyaltyController(c *gin.Context) {
+	var incomingReq requestDtos.AccumulateLoyaltyIncomingRequestDto
+	if err := c.ShouldBindJSON(&incomingReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Extract the Authorization header
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	outgoingResp, err := con.services.LoyaltySvc.AccumulateLoyalty(incomingReq, authHeader)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, outgoingResp)
 }

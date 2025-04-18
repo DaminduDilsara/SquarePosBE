@@ -38,7 +38,7 @@ func (e *Engine) GetEngine() *gin.Engine {
 	v1Group := engine.Group("/api/v1")
 	v1Group.Use(middlewares.AuthMiddleware())
 	{
-
+		v1Group.POST("/earn", e.controller.AccumulateLoyaltyController)
 	}
 
 	return engine

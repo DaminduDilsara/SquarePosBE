@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Square-POC/SquarePosBE/configurations"
+	"github.com/Square-POC/SquarePosBE/internal/clients"
 	"github.com/Square-POC/SquarePosBE/internal/controllers"
 	"github.com/Square-POC/SquarePosBE/internal/services"
 	"github.com/Square-POC/SquarePosBE/internal/transport/http"
@@ -16,7 +17,9 @@ func main() {
 
 	conf := configurations.LoadConfigurations()
 
-	servicesCollection := services.InitServices(conf)
+	loyaltyClient := clients.NewLoyaltyClient(conf.SquareConfig)
+
+	servicesCollection := services.InitServices(conf, loyaltyClient)
 
 	controller := controllers.NewControllerV1(servicesCollection)
 
