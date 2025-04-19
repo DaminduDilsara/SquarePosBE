@@ -25,7 +25,7 @@ func NewLoyaltyClient(squareConf *configurations.SquareConfigurations) LoyaltyCl
 }
 
 func (l *loyaltyClientImpl) AccumulatePoints(request requestDtos.AccumulateLoyaltySquareRequestDto, authHeader string) (*responseDtos.AccumulateLoyaltySquareResponseDto, error) {
-	url := fmt.Sprintf("%v/locations", l.squareConf.BaseUrl)
+	url := fmt.Sprintf("%v/loyalty/accounts/%v/accumulate", l.squareConf.BaseUrl, l.squareConf.AccountId)
 	method := "POST"
 
 	payload, err := json.Marshal(request)

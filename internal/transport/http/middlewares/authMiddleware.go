@@ -17,16 +17,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Extract the token from the Authorization header
-		token := strings.TrimPrefix(authHeader, "Bearer ")
-
-		// Here, you can validate the token (e.g., JWT validation)
-		if token != "token" { // Replace with actual token validation logic
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			c.Abort()
-			return
-		}
-
 		// Continue processing the request
 		c.Next()
 	}

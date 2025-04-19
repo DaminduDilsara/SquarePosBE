@@ -21,7 +21,8 @@ func NewLoyaltyService(
 	squareConf *configurations.SquareConfigurations,
 ) LoyaltyService {
 	return &loyaltyServiceImpl{
-		client: client,
+		client:     client,
+		squareConf: squareConf,
 	}
 }
 

@@ -2,8 +2,6 @@ module github.com/Square-POC/SquarePosBE
 
 go 1.23.0
 
-toolchain go1.23.8
-
 require (
 	github.com/gin-contrib/pprof v1.5.3
 	github.com/gin-gonic/gin v1.10.0

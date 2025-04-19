@@ -9,7 +9,6 @@ import (
 
 type ControllerV1 struct {
 	servicesCollection *services.ServiceCollection
-	services           services.ServiceCollection
 }
 
 func NewControllerV1(servicesCollection *services.ServiceCollection) *ControllerV1 {
@@ -57,7 +56,7 @@ func (con ControllerV1) AccumulateLoyaltyController(c *gin.Context) {
 		return
 	}
 
-	outgoingResp, err := con.services.LoyaltySvc.AccumulateLoyalty(incomingReq, authHeader)
+	outgoingResp, err := con.servicesCollection.LoyaltySvc.AccumulateLoyalty(incomingReq, authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
