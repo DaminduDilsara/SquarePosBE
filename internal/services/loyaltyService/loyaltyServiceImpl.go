@@ -26,7 +26,7 @@ func NewLoyaltyService(
 	}
 }
 
-func (l *loyaltyServiceImpl) AccumulateLoyalty(request requestDtos.AccumulateLoyaltyIncomingRequestDto, authHeader string) (*responseDtos.AccumulateLoyaltyResponseDto, error) {
+func (l *loyaltyServiceImpl) AccumulateLoyaltyService(request requestDtos.AccumulateLoyaltyRequestDto, authHeader string) (*responseDtos.AccumulateLoyaltyResponseDto, error) {
 
 	squareReq := requestDtos.AccumulateLoyaltySquareRequestDto{
 		AccumulatePoints: requestDtos.AccumulatePoints{
@@ -44,6 +44,88 @@ func (l *loyaltyServiceImpl) AccumulateLoyalty(request requestDtos.AccumulateLoy
 
 	outgoingRep := responseDtos.AccumulateLoyaltyResponseDto{
 		Points: squareResp.Events[0].AccumulatePoints.Points,
+	}
+
+	return &outgoingRep, nil
+}
+
+func (l *loyaltyServiceImpl) CreateLoyaltyRewardService(authHeader string) (*responseDtos.CreateLoyaltyRewardResponseDto, error) {
+
+	squareReq := requestDtos.CreateLoyaltyRewardSquareRequestDto{
+		IdempotencyKey: uuid.NewString(),
+		Reward: requestDtos.Reward{
+			LoyaltyAccountId: l.squareConf.LocationId,
+			RewardTierId:     l.squareConf.LoyaltyTierId,
+		},
+	}
+
+	squareResp, err := l.client.CreateLoyaltyReward(squareReq, authHeader)
+	if err != nil {
+		log.Printf("%v - Error: %v", loyaltyServiceLogPrefix, err)
+		return nil, err
+	}
+
+	outgoingRep := responseDtos.CreateLoyaltyRewardResponseDto{
+		RewardId: squareResp.Reward.Id,
+		Points:   squareResp.Reward.Points,
+		Status:   squareResp.Reward.Status,
+	}
+	return &outgoingRep, nil
+}
+
+func (l *loyaltyServiceImpl) RedeemLoyaltyRewardService(authHeader string, rewardId string) (*responseDtos.RedeemLoyaltyResponseDto, error) {
+
+	squareReq := requestDtos.RedeemLoyaltySquareRequestDto{
+		IdempotencyKey: uuid.NewString(),
+		LocationId:     l.squareConf.LocationId,
+	}
+
+	_, err := l.client.RedeemLoyaltyReward(squareReq, authHeader, rewardId)
+	if err != nil {
+		log.Printf("%v - Error: %v", loyaltyServiceLogPrefix, err)
+		return nil, err
+	}
+
+	outgoingRep := responseDtos.RedeemLoyaltyResponseDto{
+		Status: "Success",
+	}
+
+	return &outgoingRep, nil
+}
+
+func (l *loyaltyServiceImpl) RetrieveLoyaltyAccountService(authHeader string) (*responseDtos.RetrieveLoyaltyAccountResponseDto, error) {
+
+	squareResp, err := l.client.RetrieveLoyaltyAccount(authHeader, l.squareConf.AccountId)
+	if err != nil {
+		log.Printf("%v - Error: %v", loyaltyServiceLogPrefix, err)
+		return nil, err
+	}
+
+	outgoingRep := responseDtos.RetrieveLoyaltyAccountResponseDto{
+		Balance:        squareResp.LoyaltyAccount.Balance,
+		LifetimePoints: squareResp.LoyaltyAccount.LifetimePoints,
+		EnrolledAt:     squareResp.LoyaltyAccount.EnrolledAt,
+	}
+
+	return &outgoingRep, nil
+}
+
+func (l *loyaltyServiceImpl) SearchLoyaltyRewards(authHeader string, status string) (*responseDtos.SearchLoyaltyRewardsResponseDto, error) {
+	squareReq := requestDtos.SearchLoyaltyRewardsSquareRequestDto{
+		Query: requestDtos.Query{
+			LoyaltyAccountId: l.squareConf.AccountId,
+			Status:           status,
+		},
+	}
+
+	sqareResp, err := l.client.SearchLoyaltyRewards(&squareReq, authHeader)
+	if err != nil {
+		log.Printf("%v - Error: %v", loyaltyServiceLogPrefix, err)
+		return nil, err
+	}
+
+	outgoingRep := responseDtos.SearchLoyaltyRewardsResponseDto{
+		Rewards: sqareResp.Rewards,
 	}
 
 	return &outgoingRep, nil

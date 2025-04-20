@@ -10,6 +10,6 @@ type AccumulatePoints struct {
 	Points int `json:"points"`
 }
 
-type AccumulateLoyaltyIncomingRequestDto struct {
+type AccumulateLoyaltyRequestDto struct {
 	Points int `json:"points"`
 }

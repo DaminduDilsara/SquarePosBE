@@ -43,7 +43,7 @@ func (con *ControllerV1) GoogleCallback(c *gin.Context) {
 }
 
 func (con ControllerV1) AccumulateLoyaltyController(c *gin.Context) {
-	var incomingReq requestDtos.AccumulateLoyaltyIncomingRequestDto
+	var incomingReq requestDtos.AccumulateLoyaltyRequestDto
 	if err := c.ShouldBindJSON(&incomingReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -56,10 +56,80 @@ func (con ControllerV1) AccumulateLoyaltyController(c *gin.Context) {
 		return
 	}
 
-	outgoingResp, err := con.servicesCollection.LoyaltySvc.AccumulateLoyalty(incomingReq, authHeader)
+	outgoingResp, err := con.servicesCollection.LoyaltySvc.AccumulateLoyaltyService(incomingReq, authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	c.JSON(http.StatusOK, outgoingResp)
+}
+
+func (con ControllerV1) CreateLoyaltyRewardController(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	outgoingResp, err := con.servicesCollection.LoyaltySvc.CreateLoyaltyRewardService(authHeader)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, outgoingResp)
+}
+
+func (con ControllerV1) RedeemLoyaltyRewardController(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	rewardId := c.GetHeader("RewardId")
+	if rewardId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "RewardId is required"})
+		return
+	}
+
+	outgoingResp, err := con.servicesCollection.LoyaltySvc.RedeemLoyaltyRewardService(authHeader, rewardId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, outgoingResp)
+}
+
+func (con ControllerV1) RetrieveLoyaltyAccountController(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	outgoingResp, err := con.servicesCollection.LoyaltySvc.RetrieveLoyaltyAccountService(authHeader)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, outgoingResp)
+}
+
+func (con ControllerV1) SearchLoyaltyRewardsController(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header is required"})
+		return
+	}
+
+	status := c.GetHeader("status")
+
+	outgoingResp, err := con.servicesCollection.LoyaltySvc.SearchLoyaltyRewards(authHeader, status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
 	c.JSON(http.StatusOK, outgoingResp)

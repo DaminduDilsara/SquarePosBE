@@ -6,5 +6,9 @@ import (
 )
 
 type LoyaltyService interface {
-	AccumulateLoyalty(request requestDtos.AccumulateLoyaltyIncomingRequestDto, authHeader string) (*responseDtos.AccumulateLoyaltyResponseDto, error)
+	AccumulateLoyaltyService(request requestDtos.AccumulateLoyaltyRequestDto, authHeader string) (*responseDtos.AccumulateLoyaltyResponseDto, error)
+	CreateLoyaltyRewardService(authHeader string) (*responseDtos.CreateLoyaltyRewardResponseDto, error)
+	RedeemLoyaltyRewardService(authHeader string, rewardId string) (*responseDtos.RedeemLoyaltyResponseDto, error)
+	RetrieveLoyaltyAccountService(authHeader string) (*responseDtos.RetrieveLoyaltyAccountResponseDto, error)
+	SearchLoyaltyRewards(authHeader string, status string) (*responseDtos.SearchLoyaltyRewardsResponseDto, error)
 }
